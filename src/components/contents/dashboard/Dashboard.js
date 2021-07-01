@@ -1,10 +1,9 @@
-import Balance from './Balance'
+import AssetsList from './AssetsList'
 
-export default function Dashboard({ user }) {
+export default function Dashboard({ user, clan }) {
   return (
-    <div className="">
-      {/* <span>{user.display_name}</span>
-      <Balance amount={user.properties.money} /> */}
+    <div className="flex flex-col w-full p-12">
+      <AssetsList user={user} clan={clan} />
     </div>
   )
 }
