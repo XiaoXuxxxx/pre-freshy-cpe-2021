@@ -22,13 +22,12 @@ handler.post(async (req, res) => {
 
   if (amount <= 0)
     return Response.denined(res, 'amount must be greater than 0')
-  
   const user = await User
     .findById(req.query.id)
-    .select('_id clan_id properties.money')
+    .select('_id clan_id money')
     .exec()
 
-  if (user.properties.money < amount)
+  if (user.money < amount)
     return Response.denined(res, 'money is not enough')
 
   const clan = await Clan
@@ -36,7 +35,10 @@ handler.post(async (req, res) => {
     .select('properties.money')
     .exec()
 
-  user.properties.money -= amount
+  if (!clan)
+    return Response.denined(res, 'clan not found')
+
+  user.money -= amount
   await user.save()
 
   clan.properties.money += amount
@@ -57,8 +59,11 @@ handler.post(async (req, res) => {
     }
   })
 
-  Response.success(res, { 
-    user_money: user.properties.money,
+  req.socket.server.io.emit('set.money', user._id, user.money)
+  req.socket.server.io.emit('set.clan.money', user.clan_id, clan.properties.money)
+
+  Response.success(res, {
+    user_money: user.money,
     clan_money: clan.properties.money
   })
 })
