@@ -6,7 +6,7 @@ import Image from 'next/image'
 import * as Util from '@/utils/common'
 import fetchAPI from '@/utils/fetch'
 
-import Modal from '@/components/common/modal'
+import Modal from '@/components/common/Modals'
 import InputBox from '@/components/common/InputBox'
 import AlertNotification from '@/components/common/AlertNotification'
 import Button from '@/components/common/Button'
