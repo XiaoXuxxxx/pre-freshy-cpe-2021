@@ -1,8 +1,8 @@
-import { Component, useState } from 'react'
+import { useState } from 'react'
 import Router from 'next/router'
 
 import * as Util from '@/utils/common'
-import useFetch from '@/hooks/useFetch'
+import fetchAPI from '@/utils/fetch'
 
 import Image from 'next/image'
 import LogoWithText from '@/publics/logo-with-text-alt.png'
@@ -40,7 +40,7 @@ export default function LoginForm() {
 
     setLoggingIn(true)
 
-    useFetch('POST', '/api/auth', {
+    fetchAPI('POST', '/api/auth', {
       username: username,
       password: password
     })

@@ -24,7 +24,7 @@ export default function DonateMoneyModal({ user }) {
   useEffect(() => {
     // Revalidate while input donate and someone gives coin
     ((notification.type == 'error') && ((amount) && (amount != 0) && (user.money >= amount))) && clearNotification()
-  }, [user.money])
+  }, [user.money, notification.type, amount])
 
   const openModal = () => setIsOpen(true)
   const closeModal = () => { setIsOpen(false); setAmount(''); clearNotification() }
