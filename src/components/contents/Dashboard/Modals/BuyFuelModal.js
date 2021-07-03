@@ -3,7 +3,7 @@ import { XIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 
 import * as Util from '@/utils/common'
-import useFetch from '@/hooks/useFetch'
+import fetchAPI from '@/utils/fetch'
 
 import GallonImage from '@/publics/gallon.png'
 import Modal from '@/components/common/modal'
@@ -46,7 +46,7 @@ export default function BuyFuelModal({ clan }) {
     setIsBuying(true)
     clearNotification()
 
-    useFetch('POST', `/api/clans/${clan._id}/transfer/fuel`, { amount: amount })
+    fetchAPI('POST', `/api/clans/${clan._id}/transfer/fuel`, { amount: amount })
       .then(async response => {
         if (response.status == 200) {
           notify({ type: 'success', info: 'success' })
@@ -88,7 +88,7 @@ export default function BuyFuelModal({ clan }) {
           <div className="flex flex-col justify-center w-56 md:w-72">
             <div className="flex flex-row items-center bg-purple-100 rounded-lg px-4 py-2">
               <div className="w-14 h-14">
-                <Image src={GallonImage} />
+                <Image src={GallonImage} alt="" />
               </div>
               <div className="ml-3 leading-none">
                 <div className="font-bold text-purple-900 text-lg">Starship fuel</div>
