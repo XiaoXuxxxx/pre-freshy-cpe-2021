@@ -24,15 +24,28 @@ handler
  * 
  * @require User authentication
  */
- handler.get(async (req, res) => {
+handler.get(async (req, res) => {
   const clanId = parseInt(req.query.id)
   let transaction = null
 
   if (!isNaN(clanId)) {
     transaction = await Transaction
-      .findOne({'owner.type': 'planet', 'receiver.id': clanId, 'status': 'PENDING' })
+      .findOne({ 'owner.type': 'planet', 'receiver.id': clanId, 'status': 'PENDING' })
       .lean()
       .exec()
+
+    if (transaction) {
+      const planet = await Planet
+        .findById(transaction.owner.id)
+        .select('name _id')
+        .lean()
+        .exec()
+
+      delete transaction.item.planets
+      transaction.item.planet = {}
+      transaction.item.planet.id = planet._id
+      transaction.item.planet.name = planet.name
+    }
   }
 
   res
@@ -199,6 +212,11 @@ handler.patch(async (req, res) => {
     clan.position = planet._id
     await clan.save()
 
+    req.socket.server.io.emit('set.task.travel', transaction._id, {
+      confirmer: transaction.confirmer,
+      rejector: transaction.rejector
+    })
+
     transaction.status = 'SUCCESS'
   }
 
@@ -273,6 +291,11 @@ handler.delete(async (req, res) => {
   }
 
   await transaction.save()
+
+  req.socket.server.io.emit('set.task.travel', transaction._id, {
+    confirmer: transaction.confirmer,
+    rejector: transaction.rejector
+  })
 
   Response.success(res, {
     transaction_status: transaction.status,

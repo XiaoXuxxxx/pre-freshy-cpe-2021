@@ -60,7 +60,7 @@ export default function DonateMoneyModal({ user }) {
     fetchAPI('POST', `/api/users/${user._id}/transfer/coin`, { amount: amount })
       .then(async response => {
         if (response.status == 200) {
-          notify({ type: 'success', info: <>Donation successful <b>(-{Util.numberWithCommas(amount)} coin)</b></> })
+          notify({ type: 'success', info: <>Donation successful <b>({Util.numberWithCommas(amount)} coin)</b></> })
         } else {
           notify({ type: 'error', info: 'Something went wrong' })
         }
@@ -74,7 +74,7 @@ export default function DonateMoneyModal({ user }) {
     <>
       <button
         className={Util.concatClasses(
-          "animate-ping p-1 hover:bg-purple-300 rounded-lg focus:outline-none",
+          "animate-ping p-1 hover:bg-purple-300 rounded-lg focus:outline-none ml-0 sm:ml-4 xl:ml-0",
           (user.money == 0) && 'hidden'
         )}
         onClick={openModal}
@@ -95,7 +95,7 @@ export default function DonateMoneyModal({ user }) {
             <XIcon className="w-5 h-5 text-gray-400 hover:text-gray-800" />
           </button>
 
-          <div className="hidden md:flex absolute top-0 left-0 -translate-y-8 translate-x-6 w-32 h-32">
+          <div className="hidden md:flex absolute top-0 left-0 transform -translate-y-8 translate-x-6 w-32 h-32">
             <Image src={MoneyImage} alt="" />
           </div>
 

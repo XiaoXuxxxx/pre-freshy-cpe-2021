@@ -64,7 +64,7 @@ export default function BuyFuelModal({ clan }) {
     <>
       <button
         className={Util.concatClasses(
-          "font-semibold text-white bg-indigo-700 hover:bg-indigo-900 px-2 hover:shadow-none shadow-md rounded-lg focus:outline-none",
+          "font-semibold text-white bg-indigo-700 hover:bg-indigo-900 px-2 hover:shadow-none shadow-md rounded-lg focus:outline-none ml-0 sm:ml-4 xl:ml-0",
           (clan.properties.money >= clan.fuel_rate) && 'animate-pulse'
         )}
         onClick={openModal}
@@ -118,7 +118,7 @@ export default function BuyFuelModal({ clan }) {
                 <div className="text-gray-500 font-semibold">1 coin</div>
               </div>
               <div className="flex flex-row justify-between mb-3">
-                <div className="text-gray-700 text-sm font-semibold">Price per unit</div>
+                <div className="text-gray-700 text-sm font-semibold">Price / unit</div>
                 <div className="text-gray-700 font-semibold">{clan.fuel_rate} coin</div>
               </div>
 
