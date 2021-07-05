@@ -3,8 +3,8 @@ version: '3.8'
 services:
   web:
     build: .
-    image: prefreshy-2021:test
-    container_name: webserver
+    image: prefreshy-2021:dev
+    container_name: web
     ports:
       - 80:3000
   db:
