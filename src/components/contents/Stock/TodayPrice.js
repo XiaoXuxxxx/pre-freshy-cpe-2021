@@ -1,6 +1,6 @@
-import React from 'react'
-import List from '@/components/contents/stock/list'
-export default function todayprice() {
+import List from '@/components/contents/Stock/StockList'
+
+export default function TodayPrice() {
   return (
     <>
       <div className='flex h-screen '>

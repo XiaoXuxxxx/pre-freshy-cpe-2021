@@ -1,6 +1,6 @@
-import React from 'react'
-import Itemlist from '@/components/contents/stock/itemlist'
-export default function list() {
+import Itemlist from '@/components/contents/Stock/StockItem'
+
+export default function StockList() {
   return (
     <div className='flex flex-col bg-purple-200 rounded-2xl w-full shadow-2xl '>
       {/* upper list */}

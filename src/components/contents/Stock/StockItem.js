@@ -1,8 +1,7 @@
-import React from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-export default function itemlist({ symbol, price, change }) {
 
+export default function StockItem({ symbol, price, change }) {
   const [isOpen, setIsOpen] = useState(false)
 
   function closeModal() {

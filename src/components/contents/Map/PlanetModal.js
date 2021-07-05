@@ -14,7 +14,7 @@ export default function PlanetModal({ planet, image, isOpen, close }) {
       <div className="transition-all transform flex flex-col py-7 px-12 max-w-sm mx-6 md:mx-0 bg-white rounded-3xl shadow-xl">
         <div className="flex flex-row">
           <div className="w-10 h-10">
-            <Image src={image} alt=""/>
+            <Image src={image} alt="" />
           </div>
           <Dialog.Title as="h3">
             Planet Info
@@ -34,8 +34,8 @@ export default function PlanetModal({ planet, image, isOpen, close }) {
         <div>Owner: {planet.owner != 0 ? planet.owner : "None"}</div>
         <div>
           {planet.owner == 0
-            ? <Image src={Conquer} />
-            : <Image src={Battle} />
+            ? <Image src={Conquer} alt="" />
+            : <Image src={Battle} alt="" />
           }
         </div>
       </div>

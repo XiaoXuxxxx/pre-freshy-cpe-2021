@@ -50,7 +50,7 @@ export default function TaskList({ user, clan }) {
 
     fetchAPI('GET', `/api/clans/${user.clan_id}/transfer/stock`)
       .then(async response => setStock((await response.json()) || {}))
-  }, [])
+  }, [user.clan_id])
 
   // WebSocket event listeners for real-time updating 
   useSocket('set.task.fuel', (transactionId, data) => {
