@@ -15,7 +15,7 @@ const transactionLocales = {
     received_unit: 'gallon',
     cost_title: 'Cost',
     cost_unit: 'coin',
-    not_found: 'No fuel transaction at this moment'
+    not_found: 'No fuel request at this moment'
   },
   stock: {
     info: 'Leader need to invest in stock',
@@ -23,7 +23,7 @@ const transactionLocales = {
     received_unit: '',
     cost_title: 'Cost',
     cost_unit: 'coin',
-    not_found: 'No stock investment at this moment'
+    not_found: 'No stock request at this moment'
   },
   planet: {
     info: 'Captain need to land on planet',
@@ -31,8 +31,13 @@ const transactionLocales = {
     received_unit: '',
     cost_title: 'Cost',
     cost_unit: 'gallon',
-    not_found: 'No planet conquered at this moment'
+    not_found: 'No planet request at this moment'
   }
+}
+
+const fetchTransaction = (clanId, type, setState) => {
+  fetchAPI('GET', `/api/clans/${clanId}/transfer/${type}`)
+    .then(async response => setState(await response.json()))
 }
 
 export default function TaskList({ user, clan }) {
@@ -42,30 +47,22 @@ export default function TaskList({ user, clan }) {
 
   // Fetch after render finished
   useEffect(() => {
-    fetchAPI('GET', `/api/clans/${user.clan_id}/transfer/fuel`)
-      .then(async response => setFuel(await response.json()))
-
-    fetchAPI('GET', `/api/clans/${user.clan_id}/transfer/planet`)
-      .then(async response => setPlanet((await response.json()) || {}))
-
-    fetchAPI('GET', `/api/clans/${user.clan_id}/transfer/stock`)
-      .then(async response => setStock((await response.json()) || {}))
-  }, [user.clan_id])
+    fetchTransaction(clan._id, 'fuel', setFuel)
+    fetchTransaction(clan._id, 'planet', setPlanet)
+    fetchTransaction(clan._id, 'stock', setStock)
+  }, [])
 
   // WebSocket event listeners for real-time updating 
-  useSocket('set.task.fuel', (transactionId, data) => {
-    (transactionId == fuel.data._id) &&
-      setFuel({ ...fuel, data: { ...fuel.data, confirmer: data.confirmer, rejector: data.rejector } })
+  useSocket('set.task.fuel', async (targetClanId, data) => {
+    (targetClanId == clan._id) && setFuel({ data: data })
   })
 
-  useSocket('set.task.travel', (transactionId, data) => {
-    (transactionId == fuel.data._id) &&
-      setFuel({ ...planet, data: { ...planet.data, confirmer: data.confirmer, rejector: data.rejector } })
+  useSocket('set.task.travel', (targetClanId, data) => {
+    (targetClanId == clan._id) && setPlanet({ data: data })
   })
 
-  useSocket('set.task.stock', (transactionId, data) => {
-    (transactionId == stock.data._id) &&
-      setFuel({ ...stock, data: { ...stock.data, confirmer: data.confirmer, rejector: data.rejector } })
+  useSocket('set.task.stock', (targetClanId, data) => {
+    (targetClanId == clan._id) && setStock({ data: data })
   })
 
   return (
@@ -75,6 +72,7 @@ export default function TaskList({ user, clan }) {
 
         <div className="flex flex-col space-y-4">
           <TaskItem
+            user={user}
             clan={clan}
             image={GallonImage}
             data={fuel}
@@ -82,6 +80,7 @@ export default function TaskList({ user, clan }) {
           />
 
           <TaskItem
+            user={user}
             clan={clan}
             image={StarImage}
             data={planet}
@@ -89,6 +88,7 @@ export default function TaskList({ user, clan }) {
           />
 
           <TaskItem
+            user={user}
             clan={clan}
             image={StockImage}
             data={stock}

@@ -114,6 +114,8 @@ handler.post(async (req, res) => {
     rejector: []
   })
 
+  req.socket.server.io.emit('set.task.fuel', req.user.clan_id, transaction)
+
   Response.success(res, {
     transaction_id: transaction._id,
     transaction_status: transaction.status,
@@ -165,19 +167,14 @@ handler.patch(async (req, res) => {
   }
 
   if (transaction.rejector.includes(req.user.id)) {
-    return Response.denined(res, 'Cannot confirm. You already rejected')
+    return Response.denined(res, 'You already rejected')
   }
 
   if (transaction.confirmer.includes(req.user.id)) {
-    return Response.denined(res, 'Duplicate comfirmation')
+    return Response.denined(res, 'You already accepted')
   }
 
   transaction.confirmer.push(req.user.id)
-
-  req.socket.server.io.emit('set.task.fuel', transaction._id, {
-    confirmer: transaction.confirmer, 
-    rejector: transaction.rejector
-  })
 
   if (transaction.confirm_require + 1 <= transaction.confirmer.length) {
     if (clan.properties.money < transaction.item.money) {
@@ -197,6 +194,10 @@ handler.patch(async (req, res) => {
   }
 
   await transaction.save()
+
+  req.socket.server.io.emit('set.task.fuel', req.user.clan_id,
+    transaction.status == 'PENDING' ? transaction : null
+  )
 
   Response.success(res, {
     transaction_status: transaction.status,
@@ -248,11 +249,11 @@ handler.delete(async (req, res) => {
   }
 
   if (transaction.confirmer.includes(req.user.id) && (req.user.id != clan.leader)) {
-    return Response.denined(res, 'Cannot reject. You already confirmed')
+    return Response.denined(res, 'You already accepted')
   }
 
   if (transaction.rejector.includes(req.user.id)) {
-    return Response.denined(res, 'Duplicate rejection')
+    return Response.denined(res, 'You already rejected')
   }
 
   transaction.rejector.push(req.user.id)
@@ -263,10 +264,9 @@ handler.delete(async (req, res) => {
 
   await transaction.save()
 
-  req.socket.server.io.emit('set.task.fuel', transaction._id, {
-    confirmer: transaction.confirmer, 
-    rejector: transaction.rejector
-  })
+  req.socket.server.io.emit('set.task.fuel', req.user.clan_id,
+    transaction.status == 'PENDING' ? transaction : null
+  )
 
   Response.success(res, {
     transaction_status: transaction.status,

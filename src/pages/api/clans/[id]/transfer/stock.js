@@ -186,10 +186,10 @@ handler.patch(async (req, res) => {
     return Response.denined(res, 'you are too late!!! this confirmation is already REJECT')
 
   if (transaction.confirmer.includes(req.user.id))
-    return Response.denined(res, 'you just already accepted it. Didn\'t you remember that?????')
+    return Response.denined(res, 'You already accepted')
 
   if (transaction.rejector.includes(req.user.id))
-    return Response.denined(res, `Don't be indecisive. You can't confirm what you rejected.`)
+    return Response.denined(res, `You already rejected`)
 
   const stock = await Stock
     .findOne({ 'symbol': transaction.itme.stock.symbol })
@@ -205,45 +205,43 @@ handler.patch(async (req, res) => {
   transaction.confirmer.push(req.user.id)
   await transaction.save()
 
-  req.socket.server.io.emit('set.task.stock', transaction._id, {
-    confirmer: transaction.confirmer,
-    rejector: transaction.rejector
-  })
-
   // If the number of confirmer equal expected required, then excute the transaction
-  if (transaction.confirmer.length < transaction.confirm_require + 1)
-    return Response.success(res, transaction)
+  if (transaction.confirm_require + 1 <= transaction.confirmer.length) {
+    const clan = await Clan
+      .findById(req.user.clan_id)
+      .select()
+      .exec()
 
-  const clan = await Clan
-    .findById(req.user.clan_id)
-    .select()
-    .exec()
+    const total = transaction.item.stock.rate * transaction.item.stock.amount
 
-  const total = transaction.item.stock.rate * transaction.item.stock.amount
+    if (transaction.owner.type === 'clan') {
+      if (clan.properties.money < total) {
+        transaction.status = 'REJECT'
+        await transaction.save()
+        return Response.denined(res, 'no money, lol')
+      }
+      clan.properties.money -= total
+      clan.properties.stocks[transaction.item.stock.symbol] += transaction.item.stock.amount
+      await clan.save()
 
-  if (transaction.owner.type === 'clan') {
-    if (clan.properties.money < total) {
-      transaction.status = 'REJECT'
-      await transaction.save()
-      return Response.denined(res, 'no money, lol')
+    } else if (transaction.owner.type === 'market') {
+      if (clan.properties.stocks[transaction.item.stock.symbol] < transaction.item.stock.amount) {
+        transaction.status = 'REJECT'
+        await transaction.save()
+        return Response.denined(res, 'not enough stock, lol')
+      }
+      clan.properties.money += total
+      clan.properties.stocks[transaction.item.stock.symbol] -= transaction.item.stock.amount
+      await clan.save()
     }
-    clan.properties.money -= total
-    clan.properties.stocks[transaction.item.stock.symbol] += transaction.item.stock.amount
-    await clan.save()
 
-  } else if (transaction.owner.type === 'market') {
-    if (clan.properties.stocks[transaction.item.stock.symbol] < transaction.item.stock.amount) {
-      transaction.status = 'REJECT'
-      await transaction.save()
-      return Response.denined(res, 'not enough stock, lol')
-    }
-    clan.properties.money += total
-    clan.properties.stocks[transaction.item.stock.symbol] -= transaction.item.stock.amount
-    await clan.save()
+    transaction.status = 'SUCCESS'
+    await transaction.save()
   }
 
-  transaction.status = 'SUCCESS'
-  await transaction.save()
+  req.socket.server.io.emit('set.task.stock', req.user.clan_id,
+    transaction.status == 'PENDING' ? transaction : null
+  )
 
   req.socket.server.io.emit('set.clan.money', req.user.clan_id, clan.properties.money)
   req.socket.server.io.emit('set.clan.stock', req.user.clan_id, clan.properties.stocks)
@@ -289,10 +287,10 @@ handler.delete(async (req, res) => {
     .exec()
 
   if (transaction.confirmer.includes(req.user.id) && (req.user.id != clan.leader))
-    return Response.denined(res, `Don't be indecisive. You can't reject what you confirmed.`)
+    return Response.denined(res, `You already accepted`)
 
   if (transaction.rejector.includes(req.user.id))
-    return Response.denined(res, `you just already rejected it. Didn't you remember that?????`)
+    return Response.denined(res, `You already rejected`)
 
   transaction.rejector.push(req.user.id)
 
@@ -302,10 +300,9 @@ handler.delete(async (req, res) => {
 
   await transaction.save()
 
-  req.socket.server.io.emit('set.task.stock', transaction._id, {
-    confirmer: transaction.confirmer,
-    rejector: transaction.rejector
-  })
+  req.socket.server.io.emit('set.task.stock', req.user.clan_id,
+    transaction.status == 'PENDING' ? transaction : null
+  )
 
   Response.success(res, transaction)
 })

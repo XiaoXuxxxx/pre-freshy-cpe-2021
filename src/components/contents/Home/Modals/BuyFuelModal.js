@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { XIcon, ChevronDownIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 
 import * as Util from '@/utils/common'
@@ -49,7 +49,7 @@ export default function BuyFuelModal({ clan }) {
     fetchAPI('POST', `/api/clans/${clan._id}/transfer/fuel`, { amount: amount })
       .then(async response => {
         if (response.status == 200) {
-          notify({ type: 'success', info: 'success' })
+          notify({ type: 'success', info: <>Wait for confimation <b>({amount * clan.fuel_rate} coin)</b></> })
         } else {
           const data = await response.json()
           notify({ type: 'error', info: data.message })
@@ -101,7 +101,6 @@ export default function BuyFuelModal({ clan }) {
                 <div className="font-bold">
                   Detail
                 </div>
-                <ChevronDownIcon className="w-4 h-4 text-gray-500" />
               </div>
 
               {/* Detail for decoration */}
