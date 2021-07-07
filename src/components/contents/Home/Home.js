@@ -7,23 +7,26 @@ import TransactionList from './TransactionList/TransactionList'
 export default function Home({ user, clan }) {
   return (
     <Dashboard current="home" user={user} clan={clan}>
-      <div className="w-full h-full flex flex-col xl:flex-row p-8 lg:p-12 space-y-8 lg:space-y-12 xl:space-y-0 xl:space-x-12">
+      <div className="items-stretch xl:h-full flex flex-col xl:flex-row p-8 lg:p-12 space-y-8 lg:space-y-12 xl:space-y-0 xl:space-x-12">
 
         <div className="flex flex-col space-y-8 lg:space-y-12 flex-shrink-0 flex-grow">
           <div className="flex-shrink-0 lg:flex lg:flex-col xl:flex-row space-y-8 lg:space-y-12 xl:space-y-0 xl:space-x-12">
-            
-            <AssetsList
-              user={user}
-              clan={clan}
-            />
+            <div className="flex-shrink">
+              <AssetsList
+                user={user}
+                clan={clan}
+              />
+            </div>
 
-            <TaskList
-              user={user}
-              clan={clan}
-            />
+            <div className="flex-shrink w-full xl:max-w-xl">
+              <TaskList
+                user={user}
+                clan={clan}
+              />
+            </div>
           </div>
 
-          <div className="h-full w-full">
+          <div className="h-full">
             <TransactionList
               user={user}
               clan={clan}
@@ -31,7 +34,7 @@ export default function Home({ user, clan }) {
           </div>
         </div>
 
-        <div className="w-full flex flex-col flex-grow-0 flex-shrink">
+        <div className="flex flex-col flex-grow-0 flex-shrink">
           <NewsList
             user={user}
             clan={clan}

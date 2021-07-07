@@ -7,7 +7,7 @@ export default function Modal({ children, open, close }) {
       <Dialog
         as="div"
         onClose={close}
-        className="fixed inset-0 z-10"
+        className="fixed inset-0 z-20"
       >
         <div className="flex flex-col justify-center items-center h-screen">
           <Transition.Child

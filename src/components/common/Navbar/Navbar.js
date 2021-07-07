@@ -31,9 +31,9 @@ export default function Navbar({ current, user, clan }) {
     <Disclosure>
       {({ open }) => (
         <>
-          <div className="flex flex-col flex-shrink-0 w-full md:w-60 bg-indigo-900">
+          <div className="sticky top-0 z-20 flex flex-col flex-shrink-0 w-full md:w-60 bg-indigo-900">
             {/* Header includes title & logo */}
-            <div className="flex flex-row items-center justify-between md:justify-center px-8 md:px-0 py-3 md:py-4">
+            <div className="sticky top-0 flex flex-row items-center justify-between md:justify-center px-8 md:px-0 py-3 md:py-4">
               <a href="#" className="flex flex-row items-center justify-between focus:outline-none">
                 <div className="w-8 h-8 md:w-10 md:h-10">
                   <Image

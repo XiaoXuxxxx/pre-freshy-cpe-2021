@@ -94,18 +94,18 @@ export default function TaskItem({ user, clan, image, data, locale }) {
       <div className="flex flex-row w-full items-center justify-between ml-2 md:ml-4">
         <div className="flex flex-col">
           <div className="hidden md:flex font-semibold text-base text-gray-800">Request Pending</div>
-          <div className="font-bold text-lg md:text-xl text-center md:text-left uppercase text-indigo-900">{locale.info}</div>
+          <div className="font-bold text-lg text-center md:text-left uppercase text-indigo-900">{locale.info}</div>
         </div>
 
         <div className="flex flex-row">
           <div className="hidden lg:flex items-center flex-row text-center ml-3 lg:ml-8 space-x-6">
             <div>
               <div className="font-bold text-gray-800 text-base">{locale.received_title}</div>
-              <div className="font-bold text-xl text-indigo-700">{item.received} {locale.received_unit}</div>
+              <div className="font-bold text-lg text-indigo-700">{item.received} {locale.received_unit}</div>
             </div>
             <div>
               <div className="font-bold text-gray-800 text-base">{locale.cost_title}</div>
-              <div className="font-bold text-xl text-indigo-700">{item.cost} {locale.cost_unit}</div>
+              <div className="font-bold text-lg text-indigo-700">{item.cost} {locale.cost_unit}</div>
             </div>
           </div>
 
