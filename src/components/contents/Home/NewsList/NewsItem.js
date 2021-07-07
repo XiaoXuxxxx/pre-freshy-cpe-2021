@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
 import * as Util from '@/utils/common'
-import DialyNewsImage from '@/publics/general-news.png'
+import DailyNewsImage from '@/publics/general-news.png'
 import BreakingNewsImage from '@/publics/breaking-news.png'
 import NewsModal from './NewsModal'
 
@@ -12,14 +12,12 @@ export default function NewsItem({ news }) {
       badge_color: 'bg-purple-500',
       img: <Image src={BreakingNewsImage} alt="" />,
     },
-    DIALY: {
-      badge: 'DIALY NEWS',
+    DAILY: {
+      badge: 'DAILY NEWS',
       badge_color: 'bg-red-500',
-      img: <Image src={DialyNewsImage} alt="" />,
+      img: <Image src={DailyNewsImage} alt="" />,
     }
   }
-
-  console.log(news.category)
 
   return (
     <div className="flex flex-col p-6 bg-white bg-opacity-60 hover:bg-opacity-80 filter backdrop-blur-3xl rounded-xl">
