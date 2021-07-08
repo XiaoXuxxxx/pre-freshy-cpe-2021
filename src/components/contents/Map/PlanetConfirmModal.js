@@ -64,7 +64,7 @@ export default function PlanetConfirmModal({ planet, closeAll, clan, isOpen, clo
 
   const planetList = clan.owned_planet_ids.map((planet, index) => {
     return (
-      <div className="flex flex-row">
+      <div key={planet._id} className="flex flex-row">
         <div className="mr-2">
           <input
             name={index}
@@ -114,7 +114,7 @@ export default function PlanetConfirmModal({ planet, closeAll, clan, isOpen, clo
         {isBattle &&
           <>
             <div className="text-xl font-bold text-purple-900 text-center mb-4 tracking-widest">BATTLE</div>
-            <form onSubmit={onAccept} autocomplete="off" className="flex flex-col">
+            <form onSubmit={onAccept} autoComplete="off" className="flex flex-col">
               <InputBox
                 name="betMoney"
                 ref={initialFocus}
