@@ -21,6 +21,8 @@ ENV NODE_ENV production
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
+RUN apk add --no-cache tzdata
+ENV TZ Asia/Bangkok
 
 # FOR GITLAB-CI ONLY
 # For config environment variables on deployment to our cloud server
