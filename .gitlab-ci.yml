@@ -25,7 +25,7 @@ deploy:
     - echo "Deploying app"
   script:
     - chmod 400 $SSH_PRIVATE_KEY
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$PROD_SERVER_IP "docker stop PreFreshy2021 || true && docker rm PreFreshy2021 || true"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$PROD_SERVER_IP "docker rmi $CI_REGISTRY_IMAGE:latest"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$PROD_SERVER_IP "docker pull $CI_REGISTRY_IMAGE"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$PROD_SERVER_IP "docker stop PreFreshy2021 || true && docker rm PreFreshy2021 || true"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@$PROD_SERVER_IP "docker run -p 8000:3000 -d --name PreFreshy2021 $CI_REGISTRY_IMAGE"
