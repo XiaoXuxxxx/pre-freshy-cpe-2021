@@ -60,12 +60,13 @@ handler.post(async (req, res) => {
 
   // excute command 
   if (command == 'REVERT') {
-    if (battle.current_phase == 1) {
+    if (battle.current_phase <= 1) {
       battle.phase01.status = 'REJECT'
-      battle.status == 'REJECT'
+      battle.status = 'REJECT'
       battle.current_phase = 0
       await battle.save()
 
+      req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
       return Response.success(res, `End phase01 compleded!!!`)
     }
 
@@ -88,6 +89,7 @@ handler.post(async (req, res) => {
       .select()
       .exec()
 
+    defenderPlanet.visitor = 0
     attackerClan.properties.fuel += defenderPlanet.travel_cost
     attackerClan.properties.fuel += battle.stakes.fuel
     attackerClan.properties.money += battle.stakes.money
@@ -97,13 +99,24 @@ handler.post(async (req, res) => {
     await attackerClan.save()
     await defenderClan.save()
     await defenderPlanet.save()
+
+    req.socket.server.io.emit('set.clan', attackerClan._id, attackerClan)
+    req.socket.server.io.emit('set.clan.money', attackerClan._id, attackerClan.properties.money)
+    req.socket.server.io.emit('set.clan.fuel', attackerClan._id, attackerClan.properties.fuel)
+
+    req.socket.server.io.emit('set.planet', defenderPlanet._id, defenderPlanet)
+
+    req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
+
     return Response.success(res, `The war is ended like it never happended`)
 
   }
 
   if (command == 'ATTACKER_WIN') {
-    if (battle.current_phase == 1)
+    if (battle.current_phase <= 1) {
+      req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
       return Response.denined(res, `The war is not declared yet!!! You can't force someone to be defeated`)
+    }
 
     const attackerClan = await Clan
       .findById(battle.attacker)
@@ -128,6 +141,7 @@ handler.post(async (req, res) => {
     defenderPlanet.owner = battle.attacker
 
     attackerClan.position = attackerClan._id
+    defenderPlanet.visitor = 0
 
     battle.current_phase = 0
     battle.status = 'ATTACKER_WON'
@@ -137,12 +151,29 @@ handler.post(async (req, res) => {
     await defenderPlanet.save()
     await battle.save()
 
+    req.socket.server.io.emit('set.clan', attackerClan._id, attackerClan)
+    req.socket.server.io.emit('set.clan.money', attackerClan._id, attackerClan.properties.money)
+    req.socket.server.io.emit('set.clan.fuel', attackerClan._id, attackerClan.properties.fuel)
+    req.socket.server.io.emit('set.clan.planets', attackerClan._id, attackerClan.owned_planet_ids)
+
+    req.socket.server.io.emit('set.clan', defenderClan._id, defenderClan)
+    req.socket.server.io.emit('set.clan.money', defenderClan._id, defenderClan.properties.money)
+    req.socket.server.io.emit('set.clan.fuel', defenderClan._id, defenderClan.properties.fuel)
+    req.socket.server.io.emit('set.clan.planets', defenderClan._id, defenderClan.owned_planet_ids)
+
+    delete defenderPlanet.redeem
+    req.socket.server.io.emit('set.planet', defenderPlanet._id, defenderPlanet)
+
+    req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
+
     return Response.success(res, `Attacker win!!!`)
   }
 
   if (command == 'DEFENDER_WIN') {
-    if (battle.current_phase == 1)
+    if (battle.current_phase <= 1) {
+      req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
       return Response.denined(res, `The war is not declared yet!!! You can't force someone to be defeated`)
+    }
 
     const attackerClan = await Clan
       .findById(battle.attacker)
@@ -154,6 +185,11 @@ handler.post(async (req, res) => {
       .select()
       .exec()
 
+    const defenderPlanet = await Planet
+      .findById(battle.target_planet_id)
+      .select()
+      .exec()
+
     defenderClan.properties.money += battle.stakes.money
     defenderClan.properties.fuel += battle.stakes.fuel
 
@@ -162,24 +198,43 @@ handler.post(async (req, res) => {
 
     const stakePlanets = await Planet
       .find({ _id: { $in: [...battle.stakes.planet_ids] } })
-      .select('owner')
       .exec()
 
     if (!stakePlanets)
       return Response.denined(res, 'error finding stake planets')
 
-    stakePlanets.forEach(planet => {
-      planet.owner = defenderClan._id
-      planet.save()
-    })
-
     attackerClan.position = attackerClan._id
+    defenderPlanet.visitor = 0
+    
     battle.current_phase = 0
     battle.status = 'DEFENDER_WON'
 
+    await defenderPlanet.save()
     await attackerClan.save()
     await defenderClan.save()
     await battle.save()
+
+    stakePlanets.forEach(async planet => {
+      planet.owner = defenderClan._id
+      await planet.save()
+      delete planet.redeem
+      req.socket.server.io.emit('set.planet', planet._id, planet)
+    })
+
+    req.socket.server.io.emit('set.clan', attackerClan._id, attackerClan)
+    req.socket.server.io.emit('set.clan.money', attackerClan._id, attackerClan.properties.money)
+    req.socket.server.io.emit('set.clan.fuel', attackerClan._id, attackerClan.properties.fuel)
+    req.socket.server.io.emit('set.clan.planets', attackerClan._id, attackerClan.owned_planet_ids)
+
+    req.socket.server.io.emit('set.clan', defenderClan._id, defenderClan)
+    req.socket.server.io.emit('set.clan.money', defenderClan._id, defenderClan.properties.money)
+    req.socket.server.io.emit('set.clan.fuel', defenderClan._id, defenderClan.properties.fuel)
+    req.socket.server.io.emit('set.clan.planets', defenderClan._id, defenderClan.owned_planet_ids)
+
+    delete defenderPlanet.redeem
+    req.socket.server.io.emit('set.planet', defenderPlanet._id, defenderPlanet)
+
+    req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
 
     return Response.success(res, `Defender win!!!`)
   }
