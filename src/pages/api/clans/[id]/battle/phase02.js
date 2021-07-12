@@ -12,6 +12,8 @@ import Battle from '@/models/battle'
 
 const handler = nextConnect()
 
+const EXPECTED_REQUIRER = 3
+
 handler
   .use(middleware)
   .use(permission)
@@ -52,6 +54,9 @@ handler.patch(async (req, res) => {
   if (battle.phase02.status === 'REJECT')
     return Response.denined(res, `Voted failed: battle already rejected`)
 
+  if (battle.phase02.confirmer.length > battle.confirm_require)
+    return Response.denined(res, `Voted failed: vote already completed`)
+
   // validate the voter and reqester
   if (battle.phase02.rejector.includes(req.user.id))
     return Response.denined(res, `Voted failed: You already rejected the vote`)
@@ -68,6 +73,8 @@ handler.patch(async (req, res) => {
     battle.phase02.status = 'SUCCESS'
     battle.current_phase = 3
     await battle.save()
+
+    console.log(Util.getClanName(battle.attacker), Util.getClanName(battle.defender), battle.stakes)
 
     Discord.alertBet(
       Util.getClanName(battle.attacker),
@@ -119,10 +126,13 @@ handler.delete(async (req, res) => {
 
   // validate the voter and reqester
   if (battle.phase02.rejector.includes(req.user.id))
-  return Response.denined(res, `Voted failed: You already rejected the vote`)
+    return Response.denined(res, `Voted failed: You already rejected the vote`)
 
   if (battle.phase02.confirmer.includes(req.user.id))
-  return Response.denined(res, `Voted failed: You already accepted the vote`)
+    return Response.denined(res, `Voted failed: You already accepted the vote`)
+
+  if (battle.phase02.rejector.length > battle.confirm_require)
+    return Response.denined(res, `Voted failed: vote already completed`)
 
   // save the voter to rejector
   battle.phase02.rejector.push(req.user.id)
@@ -153,15 +163,13 @@ handler.delete(async (req, res) => {
 
     battle.phase02.status = 'REJECT'
     battle.status = 'DENIED'
+    battle.current_phase = 0
 
     await attackerClan.save()
     await attackerPlanet.save()
     await defenderPlanet.save()
 
     req.socket.server.io.emit('set.clan', attackerClan._id, attackerClan)
-    req.socket.server.io.emit('set.clan.money', attackerClan._id, attackerClan.properties.money)
-    req.socket.server.io.emit('set.clan.fuel', attackerClan._id, attackerClan.properties.fuel)
-    req.socket.server.io.emit('set.clan.planets', attackerClan._id, attackerClan.owned_planet_ids)
 
     delete attackerPlanet.redeem
     delete defenderPlanet.redeem

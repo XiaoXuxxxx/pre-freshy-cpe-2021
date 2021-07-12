@@ -43,7 +43,7 @@ handler.post(async (req, res) => {
     .lean()
     .exec()
 
-  if ((clan.leader != req.user.id) && (user.role != 'admin')) {
+  if ((clan.leader != req.user.id) && (user.role != 'admin') && (user.role != 'mod')) {
     return Response.denined(res, 'You arent clan leader')
   }
 
@@ -55,12 +55,21 @@ handler.post(async (req, res) => {
     return Response.denined(res, 'Planet not found')
   }
 
-  if (planet._id != clan.position) {
+  if ((planet._id != clan.position) && user.role != 'admin') {
     return Response.denined(res, 'Planet not found')
   }
 
   if (planet.redeem != code) {
-    return Response.denined(res, 'code is not working')
+    planet.visitor = 0
+    clan.position = clan._id
+
+    await planet.save()
+    await clan.save()
+
+    req.socket.server.io.emit('set.clan', clan._id, clan)
+    req.socket.server.io.emit('set.planet', planet._id, planet)
+
+    return Response.denined(res, 'Your code is incorrect. You will be teleport to your home planet.')
   }
 
   if (planet.owner == clan._id) {
@@ -97,7 +106,6 @@ handler.post(async (req, res) => {
 
   if (planet && clan) {
     req.socket.server.io.emit('set.clan', clan._id, clan)
-    req.socket.server.io.emit('set.clan.planets', clan._id, clan.owned_planet_ids)
     req.socket.server.io.emit('set.planet', planet._id, planet)
   }
 
