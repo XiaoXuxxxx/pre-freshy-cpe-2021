@@ -85,6 +85,8 @@ export default function BattleItem({ user, clan, data }) {
         )}
 
         {(currentPhase != 3 && currentPhase != 0) && <p className="text-gray-700 text-sm lg:text-base  font-medium">({currentProgress}/3)</p>}
+
+        <div className="font-medium text-indigo-800 lg:text-lg">{targetClanName}</div>
       </div>
 
       <div className="flex flex-col items-center">
@@ -93,8 +95,7 @@ export default function BattleItem({ user, clan, data }) {
         </div>
 
         <div className="flex flex-col items-center text-center leading-none">
-          <div className="font-semibold lg:text-lg">#{planetId}</div>
-          <div className="font-medium text-indigo-800 lg:text-lg">{targetClanName}</div>
+          <div className="font-semibold lg:text-lg">#{planetId}</div>          
         </div>
       </div>
 

@@ -58,19 +58,17 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
       })
   }
 
-  var isAlreadyAccepted
-  var isAlreadyRejected
-  var isAlreadyVote
+  if (phaseData.current != 0) {
+    var isAlreadyAccepted = () => phaseData.confirmer.includes(user._id)
+    var isAlreadyRejected = () => (phaseData.rejector.includes(user._id) && !isLeader)
+    var isAlreadyVote = () => (isAlreadyAccepted() || isAlreadyRejected())
+  }
 
   useEffect(() => {
     if (phaseData.current != 0) {
-      isAlreadyAccepted = () => phaseData.confirmer.includes(user._id)
-      isAlreadyRejected = () => (phaseData.rejector.includes(user._id) && !isLeader)
-      isAlreadyVote = () => (isAlreadyAccepted() || isAlreadyRejected())
-    }  
       isAlreadyAccepted() && notify({ type: 'success', info: <>You have <b>accepted</b> this pending</> })
       isAlreadyRejected() && notify({ type: 'success', info: <>You have <b>rejected</b> this pending</> })
-
+    }
   }, [phaseData])
 
   if (phaseData.current == 0) {
@@ -276,7 +274,7 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
                 </div>
               }
 
-              {!isLeader &&
+              {(!isLeader && phaseData.current == 1) || (!phaseData.isAttackerIsMe && phaseData.current == 2) &&
                 <AlertNotification
                   type={notification.type}
                   info={notification.info}
