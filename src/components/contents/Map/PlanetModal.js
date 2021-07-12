@@ -50,7 +50,7 @@ export default function PlanetModal({ user, clan, planet, image, isModalOpen, cl
     } else {
       setShowInfo(true)
     }
-  }, [isModalOpen, planet.owner, planet.visitor, clan.position])
+  }, [isModalOpen, planet.owner, planet.visitor, clan.position, planet._id, planet.tier, user.role])
 
   const openConfirmModal = () => setIsClick(true)
   const closeConfirmModal = () => setIsClick(false)

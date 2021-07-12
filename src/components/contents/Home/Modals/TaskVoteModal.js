@@ -62,7 +62,7 @@ export default function TaskVoteModal({ user, clan, image, transaction, item, lo
   useEffect(() => {
     isAlreadyAccepted() && notify({ type: 'success', info: <>You have <b>accepted</b> this transaction</> })
     isAlreadyRejected() && notify({ type: 'success', info: <>You have <b>rejected</b> this transaction</> })
-  }, [transaction])
+  }, [transaction, isAlreadyAccepted, isAlreadyRejected])
 
   return (
     <>

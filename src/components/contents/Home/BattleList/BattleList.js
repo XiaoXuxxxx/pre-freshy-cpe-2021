@@ -15,7 +15,7 @@ export default function BattleList({ user, clan }) {
   // Fetch after render finised
   useEffect(() => {
     fetchBattles(clan._id, setBattles)
-  }, [clan.id])
+  }, [clan._id])
 
   // WebSocket event listeners for real-time updating 
   useSocket('set.battle', async (target, data) => {

@@ -69,7 +69,7 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
       isAlreadyAccepted() && notify({ type: 'success', info: <>You have <b>accepted</b> this pending</> })
       isAlreadyRejected() && notify({ type: 'success', info: <>You have <b>rejected</b> this pending</> })
     }
-  }, [phaseData])
+  }, [phaseData, isAlreadyAccepted, isAlreadyRejected])
 
   if (phaseData.current == 0 || phaseData.current == 3) {
     return (
@@ -137,7 +137,7 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
 
                   {planet.stakes.planet_ids.length != 0 && (
                     <div className="tracking-wider leading-none text-sm text-gray-500 flex flex-row items-center justify-center space-x-1">
-                      {planet.stakes.planet_ids.map((planet) => <div>{planet}({Util.getPlanetTier(planet)})</div>)}
+                      {planet.stakes.planet_ids.map((planet) => <div key={planet}>{planet}({Util.getPlanetTier(planet)})</div>)}
                     </div>
                   )}
                 </div>
@@ -216,7 +216,7 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
 
                 {planet.stakes.planet_ids.length != 0 && (
                   <div className="tracking-wider leading-none text-sm text-gray-500 flex flex-row items-center justify-center space-x-1">
-                    {planet.stakes.planet_ids.map((planet) => <div>{planet}({Util.getPlanetTier(planet)})</div>)}
+                    {planet.stakes.planet_ids.map((planet) => <div key={planet}>{planet}({Util.getPlanetTier(planet)})</div>)}
                   </div>
                 )}
               </div>
