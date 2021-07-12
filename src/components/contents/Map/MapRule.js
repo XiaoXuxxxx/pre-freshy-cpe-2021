@@ -38,9 +38,9 @@ export default function MapRule({ isOpen, close }) {
           <div className="text-sm pt-2">
             <span className="font-semibold">Blinking planet indicates that the planet is either:</span>
             <div>1. The planet your clan is currently visiting.</div>
-            <div>2. Your planet, and it's being attacked.</div>
+            <div>2. Your planet, and it&apos;s being attacked.</div>
           </div>
-          <div className="text-sm pt-2 font-medium">Attacked planets can't be targeted for another attack for 24 hours (regardless of the result)</div>
+          <div className="text-sm pt-2 font-medium">Attacked planets can&apos;t be targeted for another attack for 24 hours (regardless of the result)</div>
         </div>
         <div>
           <button
