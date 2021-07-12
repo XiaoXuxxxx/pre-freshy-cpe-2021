@@ -6,6 +6,8 @@ export function alertBet(challenger, challenged, items) {
     return
   }
 
+  const planets = items.planet_ids.join(', ') || '-'
+
   fetch(DISCORD_WEBHOOK, {
     method: 'POST',
     headers: {
@@ -39,12 +41,12 @@ export function alertBet(challenger, challenged, items) {
           },
           {
             name: ':oil: น้ำมัน',
-            value: numberWithCommas(items.oil || 0),
+            value: numberWithCommas(items.fuel || 0),
             inline: true
           },
           {
             name: ':star: ดาว',
-            value: numberWithCommas(items.planet || 0),
+            value: planets,
             inline: true
           }
         ],

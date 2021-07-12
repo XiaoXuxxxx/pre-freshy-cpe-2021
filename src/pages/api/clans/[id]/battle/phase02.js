@@ -3,6 +3,8 @@ import nextConnect from 'next-connect'
 import middleware from '@/middlewares/middleware'
 import permission from '@/middlewares/permission/clan'
 import * as Response from '@/utils/response'
+import * as Discord from '@/utils/discord'
+import * as Util from '@/utils/common'
 
 import Clan from '@/models/clan'
 import Planet from '@/models/planet'
@@ -66,6 +68,12 @@ handler.patch(async (req, res) => {
     battle.phase02.status = 'SUCCESS'
     battle.current_phase = 3
     await battle.save()
+
+    Discord.alertBet(
+      Util.getClanName(battle.attacker),
+      Util.getClanName(battle.defender),
+      battle.stakes
+    )
   }
 
   req.socket.server.io.emit('set.battle', [battle.attacker, battle.defender], battle)
