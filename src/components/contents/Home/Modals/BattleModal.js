@@ -142,7 +142,7 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
                   )}
                 </div>
 
-                <div className="mt-4 mb-2 text-gray-600 text-sm text-semibold font-mono tracking-widest">
+                <div className="mt-3 text-gray-600 text-sm text-semibold font-mono tracking-widest">
                   {phaseData.id}
                 </div>
               </div>
@@ -285,6 +285,10 @@ export default function BattleModal({ user, phaseData, isLeader, planet, img, ta
                   style="mb-3"
                 />
               }
+
+              <div className="mt-3 text-gray-600 text-sm text-semibold font-mono tracking-widest">
+                {phaseData.id}
+              </div>
             </div>
           </div>
         </div>

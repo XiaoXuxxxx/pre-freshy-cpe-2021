@@ -6,6 +6,7 @@ export default function PlanetPopover({ clan, planet, isHover }) {
           <div className="font-semibold text-indigo-800">{planet.name}</div>
           <div>ID: {planet._id}</div>
           <div className="mt-1 text-gray-500">{planet.owner != 0 ? `Owned by Clan ${planet.owner}` : "Unoccupied"}</div>
+          <div className="mt-1 text-gray-500">{planet.visitor != 0 && `Visited by Clan ${planet.visitor}`}</div>
         </div>
       }
     </>

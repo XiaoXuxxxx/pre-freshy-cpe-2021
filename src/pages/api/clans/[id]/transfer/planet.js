@@ -86,11 +86,11 @@ handler.post(async (req, res) => {
     return Response.denined(res, 'clan not found')
 
   if ((clan.leader != req.user.id) && (user.role != 'admin')) {
-    return res.status(403).json({ message: 'You arent clan leader' })
+    return res.status(403).json({ message: 'only clan leader can perform this action' })
   }
 
   if (clan.position != clan._id) {
-    return Response.denined(res, 'Your clan is not in the right position')
+    return Response.denined(res, 'You must finish up the current quest first before going to another planet')
   }
 
   const planet = await Planet
@@ -106,7 +106,7 @@ handler.post(async (req, res) => {
     })
 
   if (dupeTransaction) {
-    return Response.denined(res, 'There are still pending transactions')
+    return Response.denined(res, `There are still pending travel's transactions`)
   }
 
   if (planet.visitor != 0) {
@@ -148,6 +148,7 @@ handler.post(async (req, res) => {
   })
 
   req.socket.server.io.emit('set.task.travel', req.user.clan_id, transaction)
+  req.socket.server.io.emit('set.transaction', clan._id, transaction)
 
   Response.success(res, {
     transaction_id: transaction._id,
@@ -230,7 +231,7 @@ handler.patch(async (req, res) => {
   }
 
   await transaction.save()
-
+  req.socket.server.io.emit('set.transaction', clan._id, transaction)
   req.socket.server.io.emit('set.task.travel', req.user.clan_id,
     transaction.status == 'PENDING' ? transaction : null
   )
@@ -277,7 +278,7 @@ handler.delete(async (req, res) => {
 
   let clan = await Clan
     .findById(req.query.id)
-    .select('properties leader owned_planet_ids')
+    .select('properties leader owned_planet_ids _id')
     .exec()
 
   if (!transaction) {
@@ -311,7 +312,7 @@ handler.delete(async (req, res) => {
   }
 
   await transaction.save()
-
+  req.socket.server.io.emit('set.transaction', clan._id, transaction)
   req.socket.server.io.emit('set.task.travel', req.user.clan_id,
     transaction.status == 'PENDING' ? transaction : null
   )

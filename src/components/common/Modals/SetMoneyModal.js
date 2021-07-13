@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Modal from '@/components/common/Modal'
-import { CogIcon, XIcon } from '@heroicons/react/outline'
+import { AdjustmentsIcon, XIcon } from '@heroicons/react/outline'
 import InputBox from '@/components/common/InputBox'
 import AlertNotification from '@/components/common/AlertNotification'
 import fetchAPI from '@/utils/fetch'
@@ -16,19 +16,25 @@ export default function SetMoneyModal({ user }) {
   const [amount, setAmount] = useState('')
   const [isSetting, setIsSetting] = useState(false)
 
-  const handleAmountChange = (e) => setAmount(e.target.value)
-  const handleUserIdChange = (e) => setUserId(e.target.value)
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value)
+  }
+  
+  const handleUserIdChange = (e) => {
+    setUserId(e.target.value)
+  }
 
   const addMoney = (e) => {
     e.preventDefault()
     setIsSetting(true)
+    notify({ type: '', info: '' })
 
     fetchAPI('GET', `/api/admin/user-enforcer/?user_id=${userId}&money=${amount}`)
       .then(async response => {
-        const data = await response.json()
+        let data = await response.json()
         if (response.status == 200) {
-          const moneyData = data.message.money
-          notify({ type: 'success', info: <>before: <b>{moneyData.before}</b> / after <b>{moneyData.after}</b></> })
+          data = data.message
+          notify({ type: 'success', info: <><b>{data.userId}</b> | before: <b>{data.money.before}</b> / after <b>{data.money.after}</b></> })
         } else {
           notify({ type: 'error', info: data.message })
         }
@@ -45,7 +51,7 @@ export default function SetMoneyModal({ user }) {
         onClick={openModal}
       >
         <div className="flex flex-row items-center">
-          <CogIcon className="w-5 h-5 mr-3" /> Admin
+          <AdjustmentsIcon className="w-5 h-5 mr-3" /> Admin
         </div>
       </button>
 
