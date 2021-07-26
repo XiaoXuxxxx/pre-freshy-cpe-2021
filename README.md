@@ -17,7 +17,7 @@ You need `yarn` package management to run our website if you don't have it, just
 
 1. Create `.env.local` file to config our website e.g. database, session secret. You can see the `.env.example` for the configuration example.
 2. Enter the `yarn` command on your console or terminal to install all of the required modules that this website needs.
-3. **Happy** by type `yarn dev` to view our website ✨
+3. **Happy** by type `yarn dev` to view our website on `localhost:3000` ✨
 
 ---
 
